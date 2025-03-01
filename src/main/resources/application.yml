@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/senior_project
+    username: your_username
+    password: your_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sudekesici3@gmail.com
+    password: ssnc rgkk xfix zrag
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+    default-property-inclusion: non_null
+
+jwt:
+  secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+  expiration-ms: 86400000  # 1 gün
+  issuer: "senior-project"
+
+server:
+  port: 8080 
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.example.senior_project: DEBUG 
+
+app:
+  verification-link-base-url: http://localhost:8080/api/v1/auth 
+
+open-in-view: false 
