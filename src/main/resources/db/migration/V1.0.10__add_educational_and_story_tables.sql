@@ -1,0 +1,1 @@
+-- Bu tablolar artık JPA/Hibernate tarafından model sınıfları üzerinden otomatik oluşturulacak 

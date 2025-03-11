@@ -108,7 +108,7 @@ public class BuyerOfferService {
             }
 
             offer.setStatus(OfferStatus.CANCELLED);
-            offerRepository.saveAndFlush(offer);
+            offerRepository.save(offer);
 
             log.info("Teklif iptal edildi. Teklif ID: {}, Alıcı: {}", offerId, buyer.getEmail());
         } catch (Exception e) {

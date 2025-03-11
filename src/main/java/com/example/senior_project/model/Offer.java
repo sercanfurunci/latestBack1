@@ -35,8 +35,8 @@ public class Offer {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OfferStatus status;
+    @Column(name = "status", nullable = false, length = 20)
+    private OfferStatus status = OfferStatus.PENDING;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

@@ -13,62 +13,64 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "success_stories", schema = "sc_seniorproject")
+@Table(name = "educational_contents", schema = "sc_seniorproject")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class SuccessStory {
+public class EducationalContent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
 
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String story;
+    private String description;
+
+    @Column(nullable = false)
+    private String category; // Örn: "Girişimcilik", "Pazarlama", "Ürün Sunumu"
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @ElementCollection
     @CollectionTable(
-        name = "success_story_images",
+        name = "educational_content_resources",
         schema = "sc_seniorproject",
-        joinColumns = @JoinColumn(name = "success_story_id")
+        joinColumns = @JoinColumn(name = "educational_content_id")
     )
-    private List<String> images = new ArrayList<>();
+    private List<String> resources = new ArrayList<>(); // Ek kaynaklar, linkler
+
+    @ElementCollection
+    @CollectionTable(
+        name = "educational_content_video_urls",
+        schema = "sc_seniorproject",
+        joinColumns = @JoinColumn(name = "educational_content_id")
+    )
+    private List<String> videoUrls = new ArrayList<>(); // Video içerikleri
 
     @Column(nullable = false)
-    private boolean isApproved;
-
-    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StoryComment> comments = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-        name = "story_supporters",
-        schema = "sc_seniorproject",
-        joinColumns = @JoinColumn(name = "story_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> supporters = new ArrayList<>();
-
-    private Integer supportCount;
+    private Integer estimatedDuration; // Dakika cinsinden tahmini süre
 
     @Column(nullable = false)
-    private String category;
+    private String difficulty; // "Başlangıç", "Orta", "İleri"
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean isPublished;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        supportCount = 0;
     }
 
     @PreUpdate

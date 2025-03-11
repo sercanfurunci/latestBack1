@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/buyer/**").hasAnyRole("BUYER", "ADMIN")
                 .requestMatchers("/api/v1/seller/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/messages/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
