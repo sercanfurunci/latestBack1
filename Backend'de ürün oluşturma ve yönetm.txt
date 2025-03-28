@@ -1,0 +1,63 @@
+Backend'de ürün oluşturma ve yönetme işlemleri için gerekli yapı hazır. İşte nasıl ürün oluşturabileceğiniz:
+Ürün Oluşturma (Satıcı olarak):
+Request body örneği:
+Ürün Güncelleme:
+Request body örneği:
+Ürünleri Listeleme:
+Tüm ürünleri görüntüleme:
+Kategori bazlı ürünler:
+Arama yapma:
+Fiyat aralığına göre filtreleme:
+Satıcının Kendi Ürünlerini Görüntüleme:
+Ürün Detayları:
+Ürün modelinde şu özellikler bulunuyor:
+Başlık ve açıklama
+Fiyat ve stok durumu
+
+POST http://localhost:8080/api/v1/seller/products
+add product
+
+{
+  "title": "Ev Yapımı Kek",
+  "description": "Taze fırından çıkmış lezzetli kek",
+  "price": 50.0,
+  "categoryId": 1,
+  "stock": 5,
+  "images": [
+    "kek1.jpg",
+    "kek2.jpg"
+  ],
+  "tags": [
+    "tatlı",
+    "kek",
+    "ev yapımı"
+  ],
+  "ingredients": "Un, şeker, yumurta, süt",
+  "preparationTime": "45 dakika",
+  "shippingDetails": "Aynı gün kargo",
+  "type": "FOOD"
+}
+
+
+PUT http://localhost:8080/api/v1/seller/products/{productId}
+edıt
+
+{
+  "title": "Ev Yapımı Çikolatalı Kek",
+  "price": 55.0,
+  "stock": 3,
+  "status": "AVAILABLE"
+}
+
+
+GET http://localhost:8080/api/v1/products
+
+GET http://localhost:8080/api/v1/products/search?keyword=kek
+
+GET http://localhost:8080/api/v1/products/filter?minPrice=10&maxPrice=100
+
+fıyata gore
+
+GET http://localhost:8080/api/v1/seller/products satıcıya gore
+
+GET http://localhost:8080/api/v1/products/{productId} urun detayları
