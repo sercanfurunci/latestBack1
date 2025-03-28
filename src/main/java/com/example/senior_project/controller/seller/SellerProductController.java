@@ -10,15 +10,19 @@ import com.example.senior_project.service.DtoConverter;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/seller/products")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('SELLER')")
 public class SellerProductController {
     private final SellerProductService sellerProductService;
     private final DtoConverter dtoConverter;
@@ -32,11 +36,17 @@ public class SellerProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(
+    public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long productId,
             @Valid @RequestBody ProductUpdateRequest request,
             @AuthenticationPrincipal User seller) {
-        return ResponseEntity.ok(sellerProductService.updateProduct(productId, request, seller));
+        try {
+            Product updatedProduct = sellerProductService.updateProduct(productId, request, seller);
+            return ResponseEntity.ok(dtoConverter.toProductDTO(updatedProduct));
+        } catch (Exception e) {
+            // Log the error
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @DeleteMapping("/{productId}")
@@ -58,4 +68,12 @@ public class SellerProductController {
             @AuthenticationPrincipal User seller) {
         return ResponseEntity.ok(sellerProductService.getProductDetails(productId, seller));
     }
-} 
+
+    @PostMapping("/{productId}/images")
+    public ResponseEntity<Product> uploadImages(
+            @PathVariable Long productId,
+            @RequestParam("images") List<MultipartFile> images,
+            @AuthenticationPrincipal User seller) {
+        return ResponseEntity.ok(sellerProductService.uploadImages(productId, images, seller));
+    }
+}

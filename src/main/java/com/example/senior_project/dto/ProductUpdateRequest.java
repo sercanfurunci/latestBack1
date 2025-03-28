@@ -18,4 +18,4 @@ public class ProductUpdateRequest {
     private List<String> tags;
     private String shippingDetails;
     private ProductStatus status;
-} 
+}

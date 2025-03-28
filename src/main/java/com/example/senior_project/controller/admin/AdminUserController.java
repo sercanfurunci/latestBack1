@@ -2,6 +2,7 @@ package com.example.senior_project.controller.admin;
 
 import com.example.senior_project.dto.UserStatusUpdateRequest;
 import com.example.senior_project.model.User;
+import com.example.senior_project.model.UserType;
 import com.example.senior_project.service.admin.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +19,21 @@ public class AdminUserController {
     private final AdminUserService adminUserService;
 
     @GetMapping
-    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
-        return ResponseEntity.ok(adminUserService.getAllUsers(pageable));
+    public ResponseEntity<Page<User>> getAllUsers(
+            @RequestParam(required = false) String userType,
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+
+        UserType type = null;
+        if (userType != null && !userType.equals("ALL")) {
+            try {
+                type = UserType.valueOf(userType);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok(adminUserService.getUsersByTypeAndSearch(type, search, pageable));
     }
 
     @GetMapping("/role/{role}")
@@ -54,4 +68,4 @@ public class AdminUserController {
             @RequestParam String newRole) {
         return ResponseEntity.ok(adminUserService.updateUserRole(userId, newRole));
     }
-} 
+}

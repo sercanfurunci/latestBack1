@@ -1,6 +1,7 @@
 package com.example.senior_project.service;
 
 import com.example.senior_project.config.JwtProperties;
+import com.example.senior_project.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        extraClaims.put("role", userDetails.getAuthorities().stream().findFirst().get().getAuthority());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
@@ -40,6 +42,11 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("role", String.class);
     }
 
     private boolean isTokenExpired(String token) {
@@ -66,4 +73,4 @@ public class JwtService {
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
-} 
+}

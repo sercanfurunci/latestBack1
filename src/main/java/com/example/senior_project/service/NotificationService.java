@@ -8,6 +8,7 @@ import com.example.senior_project.model.Order;
 import com.example.senior_project.model.Product;
 import com.example.senior_project.model.User;
 import com.example.senior_project.repository.NotificationRepository;
+import com.example.senior_project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class NotificationService {
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     @Transactional(noRollbackFor = Exception.class)
     public void sendOfferNotification(Offer offer, NotificationType type) {
@@ -74,7 +76,7 @@ public class NotificationService {
 
     private String createOfferMessage(Offer offer, NotificationType type) {
         String productName = offer.getProduct().getTitle();
-        
+
         return switch (type) {
             case OFFER_ACCEPTED -> String.format("%s ürünü için verdiğiniz teklif kabul edildi", productName);
             case OFFER_REJECTED -> String.format("%s ürünü için verdiğiniz teklif reddedildi", productName);
@@ -175,4 +177,29 @@ public class NotificationService {
                 .link("/products/" + product.getId())
                 .build());
     }
-} 
+
+    @Transactional
+    public void sendNotification(Long userId, String title, String message) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setRead(false);
+
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void notifySeller(User seller, String message, Object data) {
+        Notification notification = new Notification();
+        notification.setUser(seller);
+        notification.setTitle("Ürün Bildirimi");
+        notification.setMessage(message);
+        notification.setRead(false);
+
+        notificationRepository.save(notification);
+    }
+}

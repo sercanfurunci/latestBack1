@@ -21,8 +21,26 @@ public class AdminUserService {
         return userRepository.findAll(pageable);
     }
 
-    public Page<User> getUsersByRole(String role, Pageable pageable) {
-        return userRepository.findByRole(role, pageable);
+    public Page<User> getUsersByType(UserType userType, Pageable pageable) {
+        return userRepository.findByUserType(userType, pageable);
+    }
+
+    public Page<User> searchUsers(String searchTerm, Pageable pageable) {
+        return userRepository.findByFirstNameContainingOrLastNameContainingOrEmailContaining(
+                searchTerm, searchTerm, searchTerm, pageable);
+    }
+
+    public Page<User> getUsersByTypeAndSearch(UserType userType, String searchTerm, Pageable pageable) {
+        if (userType == null && (searchTerm == null || searchTerm.trim().isEmpty())) {
+            return getAllUsers(pageable);
+        } else if (userType == null) {
+            return searchUsers(searchTerm, pageable);
+        } else if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getUsersByType(userType, pageable);
+        } else {
+            return userRepository.findByUserTypeAndFirstNameContainingOrLastNameContainingOrEmailContaining(
+                    userType, searchTerm, searchTerm, searchTerm, pageable);
+        }
     }
 
     @Transactional
@@ -31,6 +49,7 @@ public class AdminUserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setStatus(status);
+        user.setActive(status == UserStatus.ACTIVE);
         User savedUser = userRepository.save(user);
 
         String message = String.format("Hesabınızın durumu %s olarak değiştirildi. Sebep: %s", status, reason);
@@ -43,7 +62,7 @@ public class AdminUserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         userRepository.delete(user);
     }
 
@@ -60,4 +79,4 @@ public class AdminUserService {
         user.setUserType(UserType.valueOf(newRole));
         return userRepository.save(user);
     }
-} 
+}

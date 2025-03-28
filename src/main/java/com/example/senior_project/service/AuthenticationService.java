@@ -38,7 +38,7 @@ public class AuthenticationService {
 
         // Doğrulama tokeni oluştur
         String verificationToken = generateVerificationToken();
-        
+
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -54,7 +54,7 @@ public class AuthenticationService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        
+
         // Doğrulama e-postası gönder
         try {
             String verificationLink = verificationLinkBaseUrl + "/verify?token=" + verificationToken;
@@ -64,7 +64,7 @@ public class AuthenticationService {
         }
 
         String token = jwtService.generateToken(savedUser);
-        
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
@@ -94,20 +94,24 @@ public class AuthenticationService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-            
+                            request.getPassword()));
+
             var user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            
+
             var token = jwtService.generateToken(user);
-            
+
             return AuthenticationResponse.builder()
                     .token(token)
+                    .userType(user.getUserType())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Authentication failed: " + e.getMessage());
         }
     }
-} 
+
+    public User getCurrentUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+}

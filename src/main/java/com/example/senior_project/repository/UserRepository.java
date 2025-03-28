@@ -13,12 +13,22 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
     boolean existsByEmail(String email);
+
     Optional<User> findByEmailVerificationToken(String token);
+
     List<User> findByUserType(UserType userType);
+
     Page<User> findByUserType(UserType userType, Pageable pageable);
-    
+
     default Page<User> findByRole(String role, Pageable pageable) {
         return findByUserType(UserType.valueOf(role), pageable);
     }
-} 
+
+    Page<User> findByFirstNameContainingOrLastNameContainingOrEmailContaining(
+            String firstName, String lastName, String email, Pageable pageable);
+
+    Page<User> findByUserTypeAndFirstNameContainingOrLastNameContainingOrEmailContaining(
+            UserType userType, String firstName, String lastName, String email, Pageable pageable);
+}

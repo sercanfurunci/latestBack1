@@ -5,5 +5,7 @@ public enum ProductStatus {
     SOLD,
     RESERVED,
     INACTIVE,
-    REJECTED, REMOVED, PENDING_REVIEW
-} 
+    REJECTED,
+    REMOVED,
+    PENDING_REVIEW
+}

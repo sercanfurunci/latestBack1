@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 
 @Data
 @Entity
@@ -25,12 +26,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", 
-    "emailVerificationToken", "emailVerificationTokenExpiry", "resetPasswordToken", 
-    "resetPasswordTokenExpiry", "phoneVerificationCode", "phoneVerificationCodeExpiry",
-    "notifications", "addresses", "notificationPreferences"})
-@ToString(exclude = {"followers", "following", "addresses", "notifications"})
-@EqualsAndHashCode(exclude = {"followers", "following", "addresses", "notifications"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "password",
+        "emailVerificationToken", "emailVerificationTokenExpiry", "resetPasswordToken",
+        "resetPasswordTokenExpiry", "phoneVerificationCode", "phoneVerificationCodeExpiry",
+        "notifications", "addresses", "notificationPreferences" })
+@ToString(exclude = { "followers", "following", "addresses", "notifications" })
+@EqualsAndHashCode(exclude = { "followers", "following", "addresses", "notifications" })
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,13 +59,16 @@ public class User implements UserDetails {
     @Column(length = 1000)
     private String biography;
 
+    @Column(length = 500)
+    private String bio;
+
     private String profilePicture;
 
     @Column(nullable = false)
     private boolean isActive = true;
 
     private String resetPasswordToken;
-    
+
     private LocalDateTime resetPasswordTokenExpiry;
 
     @Column(nullable = false)
@@ -73,11 +77,7 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_followers",
-        joinColumns = @JoinColumn(name = "followed_id"),
-        inverseJoinColumns = @JoinColumn(name = "follower_id")
-    )
+    @JoinTable(name = "user_followers", joinColumns = @JoinColumn(name = "followed_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))
     @JsonIgnore
     private Set<User> followers = new HashSet<>();
 
@@ -118,11 +118,11 @@ public class User implements UserDetails {
     private boolean emailVerified = false;
 
     private String phoneVerificationCode;
-    
+
     private LocalDateTime phoneVerificationCodeExpiry;
 
     private String emailVerificationToken;
-    
+
     private LocalDateTime emailVerificationTokenExpiry;
 
     @Enumerated(EnumType.STRING)
